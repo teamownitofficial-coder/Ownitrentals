@@ -1,0 +1,58 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh15160\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 // Firebase config\
+const firebaseConfig = \{\
+  apiKey: "YOUR_API_KEY",\
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",\
+  projectId: "YOUR_PROJECT_ID",\
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",\
+  messagingSenderId: "SENDER_ID",\
+  appId: "APP_ID"\
+\};\
+\
+// Initialize Firebase\
+firebase.initializeApp(firebaseConfig);\
+const db = firebase.firestore();\
+\
+// Load cars dynamically\
+const carList = document.getElementById("car-list");\
+db.collection("cars").get().then(snapshot => \{\
+    snapshot.forEach(doc => \{\
+        const car = doc.data();\
+        carList.innerHTML += `\
+        <div class="car-box">\
+            <img src="$\{car.image\}" alt="$\{car.name\}">\
+            <h3>$\{car.name\}</h3>\
+            <p>Type: $\{car.type\}</p>\
+            <p>Price: Rs $\{car.price_per_day\} / Day</p>\
+            <button onclick="bookCar('$\{doc.id\}')">Book Now</button>\
+        </div>`;\
+    \});\
+\});\
+\
+// Booking function\
+function bookCar(carId) \{\
+    const name = prompt("Your Name:");\
+    const email = prompt("Email:");\
+    const phone = prompt("Phone:");\
+    const start = prompt("Start Date (YYYY-MM-DD):");\
+    const end = prompt("End Date (YYYY-MM-DD):");\
+\
+    db.collection("bookings").add(\{\
+        car_id: carId,\
+        customer_name: name,\
+        customer_email: email,\
+        customer_phone: phone,\
+        start_date: start,\
+        end_date: end,\
+        created_at: new Date()\
+    \}).then(() => \{\
+        alert("Booking Successful!");\
+    \});\
+\}\
+}
